@@ -31,6 +31,49 @@
 
 ---
 
+## Snapshot Discipline — Scan Once, Never Again
+
+**The most important credit-saving rule in GSD.**
+
+### The Rule:
+```
+Before ANY work on a project:
+  1. Check: Does .gsd/PROJECT_SNAPSHOT.md exist?
+  2. YES → Read ONLY that file. You know everything. Skip scanning.
+  3. NO  → Run the SCAN workflow. Generate PROJECT_SNAPSHOT.md. Then proceed.
+```
+
+### What is PROJECT_SNAPSHOT.md?
+A single file that contains EVERYTHING about the project:
+- Type, framework, language, database, auth
+- Directory structure
+- All routes (frontend + backend)
+- All API calls (frontend → backend)
+- All database models
+- All environment variables
+- Key file index
+- Changes log (updated incrementally)
+
+### When to create:
+- First scan of any project (automatic)
+- When user runs `gst/scan` (explicit re-scan)
+
+### When to read (instead of scanning):
+- **Every. Single. Prompt.** after the first scan
+- Before planning, executing, debugging, or any other work
+
+### When to update (WITHOUT re-scanning):
+- After each EXECUTE wave — append new files/routes/endpoints to Changes Log
+- After integration changes
+
+### When to re-generate (full re-scan):
+- **ONLY** when user explicitly runs `gst/scan`
+- **NEVER** automatically
+
+**Template:** `.gsd/templates/PROJECT_SNAPSHOT.md`
+
+---
+
 ## Smart Scanning Rules
 
 When scanning a user's project folder:
