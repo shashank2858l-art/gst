@@ -311,103 +311,83 @@ Show summary table. Ask for confirmation before proceeding.
 2. Status: DRAFT → user reviews → FINALIZED
 3. **Planning Lock:** No code until status is FINALIZED
 
-### PLAN Phase — Decompose Into Phases & Sub-Phases
+### PLAN Phase — One Prompt = One Phase
 
-**Every request MUST be broken into small, atomic phases to prevent errors.**
+**Each user prompt becomes ONE phase. Chop it into minimal sub-phases. Execute fast.**
 
-1. Decompose SPEC into phases in `.gsd/ROADMAP.md`
-2. Create the phase folder structure:
+**How it works:**
+```
+User prompt 1 → Phase 1 → chop into 1.1, 1.2, 1.3
+User prompt 2 → Phase 2 → chop into 2.1, 2.2, 2.3
+User prompt 3 → Phase 3 → chop into 3.1, 3.2
+...and so on
+```
+
+**DO NOT pre-plan all phases upfront. Only plan the current prompt.**
+
+**Phase folder structure:**
 ```
 .gsd/phases/
-├── 1/                         # Phase 1: Foundation
-│   ├── PLAN-1.1.md            # Sub-phase 1.1: Database setup
-│   ├── PLAN-1.2.md            # Sub-phase 1.2: Models
-│   └── PLAN-1.3.md            # Sub-phase 1.3: Config
-├── 2/                         # Phase 2: Core Features
-│   ├── PLAN-2.1.md            # Sub-phase 2.1: Auth endpoints
-│   ├── PLAN-2.2.md            # Sub-phase 2.2: User endpoints
-│   └── PLAN-2.3.md            # Sub-phase 2.3: Middleware
-├── 3/                         # Phase 3: Frontend
-│   ├── PLAN-3.1.md            # Sub-phase 3.1: Pages
-│   ├── PLAN-3.2.md            # Sub-phase 3.2: Components
-│   └── PLAN-3.3.md            # Sub-phase 3.3: API client
-└── 4/                         # Phase 4: Integration & Testing
-    ├── PLAN-4.1.md            # Sub-phase 4.1: Connect frontend ↔ backend
-    └── PLAN-4.2.md            # Sub-phase 4.2: End-to-end tests
+├── 1/                    # Phase 1 (from user's 1st prompt)
+│   ├── PLAN-1.1.md       # Sub-phase 1.1
+│   ├── PLAN-1.2.md       # Sub-phase 1.2
+│   └── PLAN-1.3.md       # Sub-phase 1.3
+├── 2/                    # Phase 2 (from user's 2nd prompt)
+│   ├── PLAN-2.1.md       # Sub-phase 2.1
+│   └── PLAN-2.2.md       # Sub-phase 2.2
+└── ...                   # Future phases created as user sends more prompts
 ```
 
-3. Each sub-phase plan (PLAN-X.Y.md) contains:
-   - XML-structured tasks with `<verify>` and `<done>` criteria
-   - Specific files to create/modify
-   - Verification commands
-   - Clear acceptance criteria
+**Decomposition Rules:**
+- **Limit sub-phases: aim for 2-4 per phase** (less = faster)
+- Each sub-phase = 1-3 tasks max
+- Don't over-chop — if it can be done in one step, keep it as one
+- Only split when combining would cause errors
+- Speed matters — don't waste time on unnecessary planning
 
-4. **Decomposition Rules:**
-   - Each sub-phase should be **completable in 1-3 tasks**
-   - Each sub-phase should be **independently verifiable**
-   - Later phases can depend on earlier phases but NOT vice versa
-   - If a sub-phase has >5 tasks, break it down further
+### EXECUTE Phase — Sub-Phase by Sub-Phase
 
-### EXECUTE Phase — Phase by Phase, Never Skip
+**Execute in order: 1.1 → 1.2 → 1.3 → DONE (phase complete)**
 
-**Execute in strict order: 1.1 → 1.2 → 1.3 → 2.1 → 2.2 → ...**
+For each sub-phase:
+1. Execute the tasks
+2. Verify it works
+3. Mark as DONE in ROADMAP.md
+4. Update `.gsd/PROJECT_SNAPSHOT.md` changelog
+5. Move to next sub-phase
 
-1. Before starting a sub-phase:
-   - Read the PLAN-X.Y.md for that sub-phase
-   - Check that all previous sub-phases are verified ✅
-2. Execute all tasks in the sub-phase
-3. Verify the sub-phase works (run verify commands)
-4. Mark sub-phase as DONE in ROADMAP.md
-5. Update `.gsd/PROJECT_SNAPSHOT.md` with changes
-6. Move to next sub-phase
-
-**Error Prevention Rules:**
-- ❌ NEVER skip a sub-phase
-- ❌ NEVER start phase 2 before phase 1 is fully verified
-- ❌ NEVER combine multiple sub-phases into one execution
-- ✅ Verify EACH sub-phase before moving on
+**Rules:**
+- ✅ Verify each sub-phase before moving to the next
 - ✅ If a sub-phase fails, fix it before proceeding
-- ✅ Keep each sub-phase small enough to be error-free
-
-**Budget check per sub-phase:** If context >50%, compress. If >70%, state dump + fresh session.
+- ❌ Don't skip sub-phases
+- ❌ Don't plan phase 2 until user sends the next prompt
 
 ### VERIFY Phase
-1. Run all verification commands from plan
-2. Capture empirical evidence (command output, screenshots)
-3. Generate `.gsd/phases/{N}/VERIFICATION.md` per phase
-4. If gaps found → create gap closure sub-phase → re-execute
+1. Run verification commands after each sub-phase
+2. Capture evidence (command output, screenshots)
+3. If gaps found → fix immediately, don't create a separate phase for it
 
 ### ROADMAP.md Format
 ```markdown
 # Project Roadmap
 
-## Phase 1: Foundation
-- [x] 1.1 Database setup
-- [x] 1.2 Models
-- [x] 1.3 Config
+## Phase 1: {User's first request}
+- [x] 1.1 {sub-task}
+- [x] 1.2 {sub-task}
+- [x] 1.3 {sub-task}
 
-## Phase 2: Core Features
-- [x] 2.1 Auth endpoints
-- [/] 2.2 User endpoints ← CURRENT
-- [ ] 2.3 Middleware
-
-## Phase 3: Frontend
-- [ ] 3.1 Pages
-- [ ] 3.2 Components
-- [ ] 3.3 API client
-
-## Phase 4: Integration
-- [ ] 4.1 Connect frontend ↔ backend
-- [ ] 4.2 End-to-end tests
+## Phase 2: {User's second request}
+- [x] 2.1 {sub-task}
+- [/] 2.2 {sub-task} ← CURRENT
+- [ ] 2.3 {sub-task}
 ```
 
 ### COMMIT Convention
 ```
 type(phase-X.Y): description
 ```
-Examples: `feat(phase-1.1): add database connection`, `feat(phase-2.1): create login endpoint`
+Examples: `feat(phase-1.1): add user model`, `feat(phase-2.1): create login endpoint`
 Types: feat, fix, docs, refactor, test, chore
-One sub-phase = one or more atomic commits. No commit before verification passes.
 
 ---
 
