@@ -304,37 +304,110 @@ Show summary table. Ask for confirmation before proceeding.
 
 ## 📋 GSD Core Protocol
 
-**SPEC → PLAN → EXECUTE → VERIFY → COMMIT**
+**SPEC → PLAN → EXECUTE (phase by phase) → VERIFY → COMMIT**
 
 ### SPEC Phase
 1. Generate `.gsd/SPEC.md` from discovery/scan results
 2. Status: DRAFT → user reviews → FINALIZED
 3. **Planning Lock:** No code until status is FINALIZED
 
-### PLAN Phase
-1. Decompose SPEC into phases in `.gsd/ROADMAP.md`
-2. Create detailed plans in `.gsd/phases/{N}/PLAN.md`
-3. Each plan has XML-structured tasks with `<verify>` and `<done>` criteria
-4. Group tasks into waves (parallel when independent)
+### PLAN Phase — Decompose Into Phases & Sub-Phases
 
-### EXECUTE Phase
-1. Execute plans wave by wave
-2. Each task: implement → verify → commit
-3. Update `.gsd/STATE.md` after each wave
-4. **Budget check:** If context >50%, compress and continue. If >70%, state dump + fresh session.
+**Every request MUST be broken into small, atomic phases to prevent errors.**
+
+1. Decompose SPEC into phases in `.gsd/ROADMAP.md`
+2. Create the phase folder structure:
+```
+.gsd/phases/
+├── 1/                         # Phase 1: Foundation
+│   ├── PLAN-1.1.md            # Sub-phase 1.1: Database setup
+│   ├── PLAN-1.2.md            # Sub-phase 1.2: Models
+│   └── PLAN-1.3.md            # Sub-phase 1.3: Config
+├── 2/                         # Phase 2: Core Features
+│   ├── PLAN-2.1.md            # Sub-phase 2.1: Auth endpoints
+│   ├── PLAN-2.2.md            # Sub-phase 2.2: User endpoints
+│   └── PLAN-2.3.md            # Sub-phase 2.3: Middleware
+├── 3/                         # Phase 3: Frontend
+│   ├── PLAN-3.1.md            # Sub-phase 3.1: Pages
+│   ├── PLAN-3.2.md            # Sub-phase 3.2: Components
+│   └── PLAN-3.3.md            # Sub-phase 3.3: API client
+└── 4/                         # Phase 4: Integration & Testing
+    ├── PLAN-4.1.md            # Sub-phase 4.1: Connect frontend ↔ backend
+    └── PLAN-4.2.md            # Sub-phase 4.2: End-to-end tests
+```
+
+3. Each sub-phase plan (PLAN-X.Y.md) contains:
+   - XML-structured tasks with `<verify>` and `<done>` criteria
+   - Specific files to create/modify
+   - Verification commands
+   - Clear acceptance criteria
+
+4. **Decomposition Rules:**
+   - Each sub-phase should be **completable in 1-3 tasks**
+   - Each sub-phase should be **independently verifiable**
+   - Later phases can depend on earlier phases but NOT vice versa
+   - If a sub-phase has >5 tasks, break it down further
+
+### EXECUTE Phase — Phase by Phase, Never Skip
+
+**Execute in strict order: 1.1 → 1.2 → 1.3 → 2.1 → 2.2 → ...**
+
+1. Before starting a sub-phase:
+   - Read the PLAN-X.Y.md for that sub-phase
+   - Check that all previous sub-phases are verified ✅
+2. Execute all tasks in the sub-phase
+3. Verify the sub-phase works (run verify commands)
+4. Mark sub-phase as DONE in ROADMAP.md
+5. Update `.gsd/PROJECT_SNAPSHOT.md` with changes
+6. Move to next sub-phase
+
+**Error Prevention Rules:**
+- ❌ NEVER skip a sub-phase
+- ❌ NEVER start phase 2 before phase 1 is fully verified
+- ❌ NEVER combine multiple sub-phases into one execution
+- ✅ Verify EACH sub-phase before moving on
+- ✅ If a sub-phase fails, fix it before proceeding
+- ✅ Keep each sub-phase small enough to be error-free
+
+**Budget check per sub-phase:** If context >50%, compress. If >70%, state dump + fresh session.
 
 ### VERIFY Phase
 1. Run all verification commands from plan
 2. Capture empirical evidence (command output, screenshots)
-3. Generate `.gsd/VERIFICATION.md`
-4. If gaps found → create gap closure plan → re-execute
+3. Generate `.gsd/phases/{N}/VERIFICATION.md` per phase
+4. If gaps found → create gap closure sub-phase → re-execute
+
+### ROADMAP.md Format
+```markdown
+# Project Roadmap
+
+## Phase 1: Foundation
+- [x] 1.1 Database setup
+- [x] 1.2 Models
+- [x] 1.3 Config
+
+## Phase 2: Core Features
+- [x] 2.1 Auth endpoints
+- [/] 2.2 User endpoints ← CURRENT
+- [ ] 2.3 Middleware
+
+## Phase 3: Frontend
+- [ ] 3.1 Pages
+- [ ] 3.2 Components
+- [ ] 3.3 API client
+
+## Phase 4: Integration
+- [ ] 4.1 Connect frontend ↔ backend
+- [ ] 4.2 End-to-end tests
+```
 
 ### COMMIT Convention
 ```
-type(scope): description
+type(phase-X.Y): description
 ```
+Examples: `feat(phase-1.1): add database connection`, `feat(phase-2.1): create login endpoint`
 Types: feat, fix, docs, refactor, test, chore
-One task = one commit. No commit before verification passes.
+One sub-phase = one or more atomic commits. No commit before verification passes.
 
 ---
 
