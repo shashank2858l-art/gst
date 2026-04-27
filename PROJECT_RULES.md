@@ -10,10 +10,10 @@
 **SPEC → PLAN → EXECUTE → VERIFY → COMMIT**
 
 1. **SPEC**: Define requirements in `.gsd/SPEC.md` until status is `FINALIZED`
-2. **PLAN**: Decompose into phases (1, 2, 3) and sub-phases (1.1, 1.2) with folders in `.gsd/phases/`
-3. **EXECUTE**: Implement sub-phase by sub-phase. NEVER skip or combine sub-phases.
-4. **VERIFY**: Prove completion of each sub-phase with empirical evidence in phase folders.
-5. **COMMIT**: One sub-phase = atomic commits, format: `type(phase-X.Y): description`
+2. **PLAN**: Decompose into phases in `.gsd/ROADMAP.md`, then detailed plans
+3. **EXECUTE**: Implement with atomic units per task
+4. **VERIFY**: Prove completion with empirical evidence
+5. **COMMIT**: One task = one commit, format: `type(scope): description`
 
 **Planning Lock**: No implementation code until SPEC.md contains "Status: FINALIZED".
 

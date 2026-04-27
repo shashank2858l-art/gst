@@ -147,10 +147,10 @@ SPEC → PLAN → EXECUTE → VERIFY → COMMIT
 | Phase | What Happens |
 |-------|-------------|
 | **SPEC** | Requirements defined in `.gsd/SPEC.md`. Must be FINALIZED before any code. |
-| **PLAN** | Decomposed into atomic phases (1, 2, 3) and sub-phases (1.1, 1.2) with dedicated folders in `.gsd/phases/`. |
-| **EXECUTE** | Sub-phases are executed in strict sequence. Verify EACH sub-phase before moving to the next. |
-| **VERIFY** | Empirical proof required (logs, screenshots) stored in `.gsd/phases/{N}/VERIFICATION.md`. |
-| **COMMIT** | One sub-phase = atomic commits. Format: `type(phase-X.Y): description`. |
+| **PLAN** | XML-structured tasks with `<verify>` and `<done>` criteria. Grouped into waves. |
+| **EXECUTE** | Tasks run wave by wave. Each task = atomic unit. |
+| **VERIFY** | Empirical proof required (command output, not "trust me"). |
+| **COMMIT** | One task = one commit. Format: `type(scope): description` |
 
 ---
 
